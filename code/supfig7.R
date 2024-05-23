@@ -32,11 +32,33 @@ comparisons <- list( c("Hi/Hi", "Hi/Lo"), c("Hi/Lo", "Lo/Hi"), c("Lo/Hi", "Lo/Lo
 of_interest <- c("Macrophages M0", "Macrophages M1","Macrophages M2", "Monocytes", "NK cells activated", "NK cells resting",
                  "Plasma cells")
 
-for(i in of_interest){
+macrom0 <- c("Macrophages M0")
+macro <- c("Macrophages M1","Macrophages M2")
+mono_nk <- c("Monocytes", "NK cells activated", "NK cells resting","Plasma cells")
+
+for(i in macrom0){
+g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
+                              y.lab = "Estimated Proportion", group.colors = colors, 
+                              default.theme = theme, comparisons = comparisons)
+
+ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
+}
+
+
+for(i in macro){
   g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
-                                y.lab = "Estimated Proportion", group.colors = colors, default.theme = theme, comparisons = comparisons)
+                                y.lab = "Estimated Proportion", group.colors = colors, 
+                                default.theme = theme, comparisons = comparisons, y.limits = c(0,0.5))
   
   ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
   
 }
 
+for(i in mono_nk){
+  g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
+                                y.lab = "Estimated Proportion", group.colors = colors, 
+                                default.theme = theme, comparisons = comparisons, y.limits = c(0,0.25))
+  
+  ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
+  
+}

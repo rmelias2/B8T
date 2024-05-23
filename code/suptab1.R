@@ -4,6 +4,7 @@ library(fgsea)
 library(readxl)
 library(SummarizedExperiment)
 library(ggsurvfit)
+library(survival)
 
 here::i_am("code/suptab1.R")
 output.path <- here("output/suptab1")
@@ -25,7 +26,7 @@ names(gene_sets) <-
 C2_KEGG <- gmtPathways(here("data/gene_sets/msigdb_v2022.1.Hs_GMTs/c2.cp.kegg.v2022.1.Hs.symbols.gmt"))
 C2_CGP <- gmtPathways(here("data/gene_sets/msigdb_v2022.1.Hs_GMTs/c2.cgp.v2022.1.Hs.symbols.gmt"))
 C7_Immunesig <- gmtPathways(here("data/gene_sets/msigdb_v2022.1.Hs_GMTs/c7.immunesigdb.v2022.1.Hs.symbols.gmt"))
-C8_CellType <- gmtPathways(here("data/gene_sets/msigdb_v2022.1.Hs_GMTs/c8.all.v2022.1.Hs.symbols.gmt"))
+C8_CellType <- gmtPathways(here("data/gene_sets/msigdb_v2022.1.Hs_GMTs/c8.all.v2023.2.Hs.symbols.gmt"))
 
 
 # Identify B_CELL related gene sets ####
@@ -59,9 +60,9 @@ for(i in seq_along(gene_sets)){
   overlaps$size[i] <- size
 }
 
-overlaps %>% view()
+head(overlaps)
 ol = intersect(bcgs[[1]], c("BLK", "CD19"))
-sessionInfo()
+
 
 #Identify GSVA Correlation ####
 library(GSVA)
@@ -70,7 +71,9 @@ se <- readRDS(here("output/00.0_data_prep/IMvigor010_tpm_se.rds"))
 mat <- assays(se)[["tpm"]]
 
 mat <- log2(mat+1)
-results <- gsva(mat, gene_sets)
+
+gsvapar <- gsvaParam(mat, gene_sets, maxDiff=TRUE, kcdf="Gaussian")
+results <- gsva(param = gsvapar)
 cors <- cor(t(results))
 
 gsva.cors.df <- data.frame(gsva.cor = cors[,"b_cell"], gene_set = names(cors[,"b_cell"]))

@@ -13,7 +13,7 @@
 
 ggplot_samplelvl_boxplot <- function(data, x_variable, y_variable, interaction.term = FALSE,
                                      subset_variable = NULL, subset_values = NULL, default.theme = "default", x.lab = NULL,
-                                     y.lab = NULL, group.colors = NULL, comparisons = NULL){
+                                     y.lab = NULL, group.colors = NULL, comparisons = NULL, y.limits = NULL, pval.position = "centre"){
   
   required_packages <- c("ggpubr")
   for (pkg in required_packages) {
@@ -47,6 +47,7 @@ ggplot_samplelvl_boxplot <- function(data, x_variable, y_variable, interaction.t
     default.theme = default.theme
   }
   
+  symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, Inf), symbols = c("****", "***", "**", "*", ""))
   ## Generate Plot
   if(interaction.term != FALSE){
     g <- ggplot(plot_data, aes(x = .data[[x_variable]] , y = .data[[y_variable]], fill = .data[[interaction.term]], 
@@ -62,10 +63,13 @@ ggplot_samplelvl_boxplot <- function(data, x_variable, y_variable, interaction.t
   } else{
     g <- g+scale_fill_brewer(palette = "Set1")
   }
+  if(!is.null(y.limits)){
+    g <- g + ylim(y.limits[1], y.limits[2])
+  }
   if(!is.null(comparisons)){
-    g <- g + stat_compare_means(label = "p.format", label.x.npc = "centre", size = 3, comparisons = comparisons)
+    g <- g + stat_compare_means(symnum.args = symnum.args, label.x.npc = pval.position, size = 3, comparisons = comparisons)
   } else{
-    g <- g + stat_compare_means(label = "p.format", label.x.npc = "centre", size = 3)
+    g <- g + stat_compare_means(label = "p.format", label.x.npc = pval.position, size = 3)
   }
   if(!is.null(x.lab)){
     g <- g + xlab(x.lab)

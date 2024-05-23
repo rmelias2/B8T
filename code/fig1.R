@@ -36,6 +36,6 @@ df <- data %>% filter(ctDNA_call_C1D1 == "Negative", ARM == "Observation")
 km_curve(Data = df, groups = "b_cell_bin", group_label = "BCGS", subset_label = "Obs, ctDNA Negative", plot_colors = colors)
 
 #ctDNA negative, Atezo 
-df <- data %>% filter(ctDNA_call_C1D1 == "Negative", ARM == "Observation")
+df <- data %>% filter(ctDNA_call_C1D1 == "Negative", ARM == "Atezo")
 km_curve(Data = df, groups = "b_cell_bin", group_label = "BCGS", subset_label = "Atezo, ctDNA Negative", plot_colors = colors)
 

@@ -1,5 +1,6 @@
 library(here)
 library(tidyverse)
+library(networkD3)
 
 
 here::i_am("code/fig4.R")
@@ -22,14 +23,14 @@ pre.post_analysis <- results %>% filter(!ptID %in% no_follow_up)
 pre.post_analysis$VISIT <- factor(pre.post_analysis$VISIT, levels = c("PRE", "POST"))
 
 source(here('code/function_boxplot.R'))
-
+cols <- c("PRE" = "darkgreen", "POST" = "brown")
 g <- ggplot_samplelvl_boxplot(data = pre.post_analysis, x_variable = "VISIT", y_variable = "t_cell", default.theme = "default",
-                         x.lab = "Treatment Visit", y.lab = "CD8TCGS", group.colors = NULL, comparisons = NULL)
+                         x.lab = "Treatment Visit", y.lab = "CD8TCGS", group.colors = cols, comparisons = NULL, pval.position = "left", y.limits = c(-1,1.1))
 
 ggsave(filename = "CD8TGCS_ABACUS_Pre_Post.tiff", path = output.path, plot = g, device = "tiff", width = 2, height = 3, units = "in", dpi = 320)
 
 g <- ggplot_samplelvl_boxplot(data = pre.post_analysis, x_variable = "VISIT", y_variable = "b_cell", default.theme = "default",
-                              x.lab = "Treatment Visit", y.lab = "BCGS", group.colors = NULL, comparisons = NULL)
+                              x.lab = "Treatment Visit", y.lab = "BCGS", group.colors = cols, comparisons = NULL, pval.position = "left", y.limits = c(-1,1.1))
 
 ggsave(filename = "BCGS_ABACUS_Pre_Post.tiff", path = output.path, plot = g, device = "tiff", width = 2, height = 3, units = "in", dpi = 320)
 
@@ -47,7 +48,7 @@ g <- stacked_bar(df = plot, x_variable = "B8T", group_variable = "response",
                    
 ggsave(filename = "B8T_ABACUS_Pre_Response.tiff", path = output.path, plot = g, device = "tiff", width = 3, height = 2, units = "in", dpi = 320, bg = "white")
 
-cols = c("No" = "darkgreen", "Yes" = "orange")
+cols = c("No" = "darkgreen", "Yes" = "red")
 
 g <- stacked_bar(df = plot, x_variable = "B8T", group_variable = "RELAPSE", annotate_n = FALSE, group.colors = cols,
                  x = "B8T", y = "Frequency", fill = "Relapse") 

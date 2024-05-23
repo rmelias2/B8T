@@ -52,11 +52,12 @@ comparisons <- list( c("Hi/Hi", "Hi/Lo"), c("Hi/Lo", "Lo/Hi"), c("Lo/Hi", "Lo/Lo
 
 g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable = "B cells memory", 
                          y.lab = "Estimated Proportion", group.colors = colors, default.theme = theme, comparisons = comparisons)
+g <- g + ylim(0,0.5)
 
 ggsave(filename = paste0("mem_bcells",".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
 
 g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable = "B cells naive", 
                               y.lab = "Estimated Proportion", group.colors = colors, default.theme = theme, comparisons = comparisons)
-
+g <- g + ylim(0,0.5)
 ggsave(filename = paste0("naive_bcells",".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
 
