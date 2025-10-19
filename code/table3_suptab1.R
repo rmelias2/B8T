@@ -5,8 +5,8 @@ library(ggsurvfit)
 library(survival)
 
 
-here::i_am("code/table1.R")
-output.path <- here("output/table1")
+here::i_am("code/table3_suptab1.R")
+output.path <- here("output/table3_suptab1")
 if (!dir.exists(here(output.path))) dir.create(here(output.path))
 
 data <- read_tsv(here("output/01.0_rna_seq_gsva/gsva_results_log2.txt"))
@@ -16,13 +16,17 @@ data <- read_tsv(here("output/01.0_rna_seq_gsva/gsva_results_log2.txt"))
 
 data$survival_obj <- Surv(data$OS_months, data$OS_numeric)
 data$Baseline_ECOG <- factor(data$Baseline_ECOG)
-data <- data %>% mutate(arm_label = if_else(ARM == "Observation", "Obs", "Atezo"))
-data$arm_label <- factor(data$arm_label, levels = c("Obs", "Atezo"))
-data$TMB_status <- factor(data$TMB_status, levels = c("TMB_low", "TMB_high"))
-data <- data %>% mutate(ctDNA_call_C1D1 = if_else(is.na(ctDNA_call_C1D1), "Missing", ctDNA_call_C1D1))
-data$B8T <- factor(data$B8T, levels = c("Lo/Lo", "Lo/Hi", "Hi/Lo", "Hi/Hi"))
-data$ctDNA_call_C1D1 <- factor(data$ctDNA_call_C1D1, levels = c("Negative", "Missing", "Positive"))
 
+data <- data %>%
+  mutate(
+    TMB_status = fct_explicit_na(TMB_status, na_level = "Missing") %>%
+      fct_relevel("TMB_low","TMB_high","Missing"),
+    ctDNA_call_C1D1 = fct_explicit_na(ctDNA_call_C1D1, na_level = "Missing") %>%
+      fct_relevel("Negative","Missing","Positive"),
+    B8T = factor(B8T, levels = c("Lo/Lo","Lo/Hi","Hi/Lo","Hi/Hi")),
+    arm_label = factor(if_else(ARM == "Observation", "Obs", "Atezo"),
+                       levels = c("Obs","Atezo"))
+  )
 
 #### Subset by B8T cohort ----
 
@@ -47,3 +51,7 @@ for(i in seq_along(1:length(B8T_groups))){
   t3 %>% write_csv(here(output.path, paste0(label,".csv")))
   
 }
+
+mva <- coxph(survival_obj ~ arm_label * B8T + ctDNA_call_C1D1 + tumor_stage + nodal_status + PDL1_status + TMB_status, data = data)
+summary(mva)
+

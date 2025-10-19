@@ -5,6 +5,7 @@ library(ggsurvfit)
 
 here::i_am("code/supfig5.R")
 output.path <- here("output/supfig5")
+if (!dir.exists(here(output.path))) dir.create(here(output.path))
 
 
 #Load Data
@@ -16,17 +17,17 @@ data <- data %>% mutate(B8T_hihivselse = if_else(B8T == "Hi/Hi", "Hi/Hi", "non-H
                         IFN_group = if_else(IFN_gamma > median(IFN_gamma), "high", "low"))
 
 
-# Plot B8T Hi/Hi by Treatment Arm
+# Plot B8T Lo/Lo by Treatment Arm
 colors = c("Atezo" = "red", "Obs"= "blue")
-df <- data %>% filter(B8T == "Lo/Hi",ctDNA_call_C1D1 == "Negative")
+df <- data %>% filter(B8T == "Lo/Lo",ctDNA_call_C1D1 == "Negative")
 
-km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Hi, ctDNA Negative", plot_colors = colors)
+km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Lo, ctDNA Negative", plot_colors = colors)
 
-df <- data %>% filter(B8T == "Lo/Hi",ctDNA_call_C1D1 == "Positive")
+df <- data %>% filter(B8T == "Lo/Lo",ctDNA_call_C1D1 == "Positive")
 
-km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Hi, ctDNA Positive", plot_colors = colors)
+km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Lo, ctDNA Positive", plot_colors = colors)
 
 
-df <- data %>% filter(B8T == "Lo/Hi")
+df <- data %>% filter(B8T == "Lo/Lo")
 
-km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Hi", plot_colors = colors)
+km_curve(Data = df, groups = "ARM", group_label = "Arm", subset_label = "Lo/Lo", plot_colors = colors)

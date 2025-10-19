@@ -6,6 +6,7 @@ library(ggsurvfit)
 here::i_am("code/supfig7.R")
 output.path <- here("output/supfig7")
 
+if (!dir.exists(here(output.path))) dir.create(here(output.path))
 
 
 # Plot CIBERSORT B Cells
@@ -29,36 +30,13 @@ colors = c("Hi/Hi" = "#d1d43f", "Hi/Lo"= "#2b628c", "Lo/Hi" = "#3fd485", "Lo/Lo"
 comparisons <- list( c("Hi/Hi", "Hi/Lo"), c("Hi/Lo", "Lo/Hi"), c("Lo/Hi", "Lo/Lo"), c("Hi/Hi", "Lo/Hi"),
                      c("Hi/Lo", "Lo/Lo"), c("Hi/Hi", "Lo/Lo"))
 
-of_interest <- c("Macrophages M0", "Macrophages M1","Macrophages M2", "Monocytes", "NK cells activated", "NK cells resting",
-                 "Plasma cells")
+of_interest <- c("T cells follicular helper", "T cells regulatory (Tregs)","T cells CD4 memory activated", "T cells CD4 memory resting", "T cells CD8")
 
-macrom0 <- c("Macrophages M0")
-macro <- c("Macrophages M1","Macrophages M2")
-mono_nk <- c("Monocytes", "NK cells activated", "NK cells resting","Plasma cells")
-
-for(i in macrom0){
-g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
-                              y.lab = "Estimated Proportion", group.colors = colors, 
-                              default.theme = theme, comparisons = comparisons)
-
-ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
-}
-
-
-for(i in macro){
+for(i in of_interest){
   g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
-                                y.lab = "Estimated Proportion", group.colors = colors, 
-                                default.theme = theme, comparisons = comparisons, y.limits = c(0,0.5))
+                                y.lab = "Estimated Proportion", group.colors = colors, default.theme = theme, comparisons = comparisons)
   
   ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
   
 }
 
-for(i in mono_nk){
-  g <- ggplot_samplelvl_boxplot(data = cibersortx, x_variable = "B8T", y_variable =  i, 
-                                y.lab = "Estimated Proportion", group.colors = colors, 
-                                default.theme = theme, comparisons = comparisons, y.limits = c(0,0.25))
-  
-  ggsave(filename = paste0(i,".tiff"), path = output.path, plot = g, device = "tiff", width = 3, height = 3, units = "in", dpi = 320)
-  
-}

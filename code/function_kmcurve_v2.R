@@ -6,7 +6,6 @@
 #' @param xaxis.label Label for x.axis 
 #' @param plot_colors names vector of colors corresponding to groups in comparison 
 
-
 km_curve <- function(
     Data,
     groups,
@@ -27,41 +26,29 @@ km_curve <- function(
     else library(pkg, character.only = TRUE)
   }))
   
-  # --- (A) Initial fit ---
   surv.object <- survfit2(
     Surv(Data[[survival_time]], Data[[survival_event]]) ~ Data[[groups]],
     data = Data
   )
   
+  # Extract tidy survival data
   tidy_df <- ggsurvfit::tidy_survfit(surv.object)
   
-  # --- (B) Find cutoff time when ANY group drops below 5 ---
+  # compute the last time before any group drops below 5 at risk [Per Journal Guidelines]
   t_cut <- tidy_df %>%
     group_by(strata) %>%
-    summarise(first_below = suppressWarnings(min(time[n.risk < 5], na.rm = TRUE)), .groups = "drop") %>%
-    summarise(cutoff_time = min(first_below, na.rm = TRUE)) %>%
+    summarize(last_ok = max(time[n.risk >= 5], na.rm = TRUE), .groups = "drop") %>%
+    summarize(cutoff_time = min(last_ok, na.rm = TRUE)) %>%
     pull(cutoff_time)
   
+  # if nothing meets the threshold, default to max observed time
   if (is.infinite(t_cut) || is.na(t_cut)) {
     t_cut <- max(tidy_df$time, na.rm = TRUE)
+  } else {
+    max(tidy_df$time, na.rm = TRUE)
   }
- 
-  message(sprintf("[km_curve] Censoring data at %.2f months (first n.risk < 5 in any group).", t_cut))
   
-  # --- (C) Cap times and censor beyond cutoff ---
-  Data_capped <- Data %>%
-    mutate(
-      !!sym(survival_event) := if_else(.data[[survival_time]] > t_cut, 0, .data[[survival_event]]),
-      !!sym(survival_time)  := pmin(.data[[survival_time]], t_cut)
-    )
-  
-  # --- (D) Refit after truncation ---
-  surv.object <- survfit2(
-    Surv(Data_capped[[survival_time]], Data_capped[[survival_event]]) ~ Data_capped[[groups]],
-    data = Data_capped
-  )
-  
-  # --- (E) Plot ---
+  # ---- (C) build the figure ----
   g <- surv.object %>%
     ggsurvfit(linewidth = 1) +
     add_risktable(
@@ -74,8 +61,10 @@ km_curve <- function(
         theme(plot.title = element_text(face = "bold"))
       )
     ) +
-    xlab(xaxis.label) +
-    ylab("Overall survival") +
+    
+    coord_cartesian(xlim = c(0, t_cut)) +    
+    xlab(xaxis.label) +                       
+    ylab("Overall survival") +              
     labs(color = group_label) +
     theme_classic() +
     scale_y_continuous(
@@ -91,16 +80,16 @@ km_curve <- function(
       axis.text.y = element_text(size = 10)
     )
   
-  # --- (F) Save ---
+  # ---- (D) save ----
   outputname <- paste0(stringr::str_replace_all(subset_label, pattern = ",| |/", replacement = "_"), group_label)
   ggsave(filename = paste0(outputname, ".tiff"),
          path = output.path, plot = g, device = "tiff",
          width = width, height = height, units = "in", dpi = 320)
   
+  
   invisible(g)
 }
 
-## Function to calculate pvalue since it is removed from the plots
 km_pvalue <- function(Data, groups, survival_time = "OS_months", survival_event = "OS_numeric") {
   stopifnot(all(c(survival_time, survival_event) %in% names(Data)))
   f <- survival::survdiff(stats::as.formula(
@@ -111,9 +100,7 @@ km_pvalue <- function(Data, groups, survival_time = "OS_months", survival_event 
 }
 
 
-
-
-
+#' @title Landmark Survival
 #' @description Returns the survival probability at a fixed time (e.g., 24 months)
 #' @param Data Data frame containing survival time, event, and group columns
 #' @param groups Variable defining comparison groups
@@ -121,7 +108,8 @@ km_pvalue <- function(Data, groups, survival_time = "OS_months", survival_event 
 #' @param survival_event Name of event indicator (1=event, 0=censored)
 #' @param landmark Landmark time in months (default = 24 for 2-year survival)
 #' @return Tibble with group and estimated survival probability at landmark
-
+#' @examples
+#' km_landmark(df, groups = "b_cell_bin")
 km_landmark <- function(Data,
                         groups,
                         survival_time  = "OS_months",

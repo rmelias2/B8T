@@ -11,7 +11,7 @@
 #' @param group.colors named vector of colors for groups
 
 
-ggplot_samplelvl_boxplot <- function(data, x_variable, y_variable, interaction.term = FALSE,
+ggplot_samplelvl_violin <- function(data, x_variable, y_variable, interaction.term = FALSE,
                                      subset_variable = NULL, subset_values = NULL, default.theme = "default", x.lab = NULL,
                                      y.lab = NULL, group.colors = NULL, comparisons = NULL, y.limits = NULL, pval.position = "centre"){
   
@@ -52,10 +52,10 @@ ggplot_samplelvl_boxplot <- function(data, x_variable, y_variable, interaction.t
   if(interaction.term != FALSE){
     g <- ggplot(plot_data, aes(x = .data[[x_variable]] , y = .data[[y_variable]], fill = .data[[interaction.term]], 
                                group = interaction(.data[[x_variable]], .data[[interaction.term]]))) + 
-      geom_boxplot(outlier.alpha = 0) 
+      geom_violin(outlier.alpha = 0, draw_quantiles = c(0.25,0.5,0.75)) 
   } else {
     g <- ggplot(plot_data, aes(x = .data[[x_variable]] , y = .data[[y_variable]], fill = .data[[x_variable]])) +
-      geom_boxplot(outlier.alpha = 0) + 
+      geom_violin(outlier.alpha = 0, draw_quantiles = c(0.25,0.5,0.75))  + 
       geom_jitter(size = 0.5, width = 0.2, height = 0)
   }
   if(!is.null(group.colors)){

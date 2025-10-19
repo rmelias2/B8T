@@ -23,7 +23,7 @@ plot_and_save_density <- function(data, xvar, outputname, xlabname){
 #Sup Figure 1
 # All Patients ####
 #BCGS 
-plot_and_save_density(data = data, x = "b_cell", outputname = "b_cell_densityplot", xlabname = "BSGS")
+plot_and_save_density(data = data, x = "b_cell", outputname = "b_cell_densityplot", xlabname = "BCGS")
 
 #CD8GS 
 plot_and_save_density(data = data, x = "t_cell", outputname = "t_cell_densityplot", xlabname = "CD8TGS")
@@ -32,7 +32,7 @@ plot_and_save_density(data = data, x = "t_cell", outputname = "t_cell_densityplo
 df <- data %>% filter(ctDNA_call_C1D1 == "Positive")
 
 #BCGS
-plot_and_save_density(data = df, x = "b_cell", outputname = "ctdnaPos_b_cell_densityplot", xlabname = "BSGS")
+plot_and_save_density(data = df, x = "b_cell", outputname = "ctdnaPos_b_cell_densityplot", xlabname = "BCGS")
 
 #CD8GS
 plot_and_save_density(data = df, x = "t_cell", outputname = "ctdnaPos_t_cell_densityplot", xlabname = "CD8TGS")
@@ -41,7 +41,7 @@ plot_and_save_density(data = df, x = "t_cell", outputname = "ctdnaPos_t_cell_den
 df <- data %>% filter(ctDNA_call_C1D1 == "Negative")
 
 #BCGS
-plot_and_save_density(data = df, x = "b_cell", outputname = "ctdnaNegative_b_cell_densityplot", xlabname = "BSGS")
+plot_and_save_density(data = df, x = "b_cell", outputname = "ctdnaNegative_b_cell_densityplot", xlabname = "BCGS")
 
 #CD8GS
 plot_and_save_density(data = df, x = "t_cell", outputname = "ctdnaNegative_t_cell_densityplot", xlabname = "CD8TGS")

@@ -14,13 +14,21 @@ stacked_bar <- function(df, x_variable, group_variable, stat = c("fisher.test", 
                         default.theme = "default", ...) {
   
   format_pvalue <- function(pvalue) {
-    
-    if (pvalue < 0.001) {
-      return(format(pvalue, scientific = TRUE, digits = 3))
-    } else {
-      # Ensure there are always 3 digits after the decimal point
-      return(sprintf("%.3f", pvalue))
+    # If the p-value is exactly 1, return "1"
+    if(pvalue == 1) {
+      return("1")
     }
+    # For very low p-values, report as "<0.001"
+    if(pvalue < 0.001) {
+      return("<0.001")
+    }
+    # If the p-value is in the range considered "close to 0.05" (0.01 to 0.2 inclusive),
+    # report it with 2 significant figures.
+    if(pvalue >= 0.01 && pvalue <= 0.2) {
+      return(as.character(signif(pvalue, 2)))
+    }
+    # Otherwise, report with 1 significant figure.
+    return(as.character(signif(pvalue, 1)))
   }
   
   #Calculate pvalue: 
